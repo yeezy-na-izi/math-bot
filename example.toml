@@ -7,12 +7,17 @@ models = ["app.db.functions", "aerich.models"]
 [storage]
 use_persistent_storage = false
 
+[webhook]
+port = 1234
+
 [settings]
 owner_id = 123
 throttling_rate = 0.5
 use_webhook = false
 use_pyrogram_client = false
 drop_pending_updates = false
+
+[api]
 
 [math]
 max_matrix = 8

@@ -5,8 +5,9 @@ from app.config import Config
 
 users_commands = {
     "help": "Показать список команд",
-    "about": "Показать информацию о боте",
-    "dialog": "Запустить тестовый диалог",
+    "det": "Вычислить детерминант матрицы",
+    "inv": "Вычислить обратную матрицу",
+    "ref": "Привести матрицу к ступенчатому виду",
 }
 
 owner_commands = {**users_commands, "ping": "Check bot ping", "stats": "Show bot stats"}
