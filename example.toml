@@ -1,0 +1,23 @@
+[bot]
+token = "TOKEN"
+
+[database]
+models = ["app.db.functions", "aerich.models"]
+
+[storage]
+use_persistent_storage = false
+
+[settings]
+owner_id = 441567171
+throttling_rate = 0.5
+use_webhook = false
+use_pyrogram_client = false
+drop_pending_updates = false
+
+[math]
+MAX_MATRIX = 8
+MAX_VARS = 7
+MAX_MODULO = 1000000000000000 # 1e15
+MAX_ELEMENTS = 101
+FACTORIZE_MAX = 1000000000000 # 1e12
+
