@@ -71,6 +71,15 @@ class ConfigApi:
 
 
 @dataclass
+class ConfigMath:
+    max_matrix: int = 8
+    max_vars: int = 7
+    max_modulo: int = 1000000000000000  # 1e15
+    max_elements: int = 101
+    factorise_max: int = 1000000000000  # 1e12
+
+
+@dataclass
 class Config:
     bot: ConfigBot
     database: ConfigDatabase
@@ -78,6 +87,7 @@ class Config:
     webhook: ConfigWebhook
     settings: ConfigSettings
     api: ConfigApi
+    math: ConfigMath
 
     @classmethod
     def parse(cls, data: dict) -> "Config":

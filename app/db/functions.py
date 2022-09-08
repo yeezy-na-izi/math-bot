@@ -18,3 +18,23 @@ class User(models.User):
     @classmethod
     async def get_count(cls) -> int:
         return await cls.all().count()
+
+
+class LogRecord(models.LogRecord):
+    @classmethod
+    async def add(cls, user: models.User, command: str, info: dict = None, fail: bool = False) -> models.LogRecord:
+        log_record = await cls(user=user, command=command, info=info, fail=fail)
+        await log_record.save()
+        return log_record
+
+    @classmethod
+    async def get_count(cls) -> int:
+        return await cls.all().count()
+
+    @classmethod
+    async def get_count_by_fail(cls, fail: bool) -> int:
+        return await cls.filter(fail=fail).count()
+
+    @classmethod
+    async def get_fails_records(cls) -> list:
+        return await cls.filter(fail=True).all()
