@@ -1,4 +1,4 @@
-from aiogram import Router, Bot
+from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -37,10 +37,8 @@ async def matrix_input(message: Message, config: Config):
 
 
 @router.message(Command(commands=["det"]))
-async def det_handler(message: Message, state: FSMContext, bot: Bot):
-    # set state for determinant and send mess
+async def det_handler(message: Message, state: FSMContext):
     await message.answer("Введите матрицу для вычисления определителя")
-
     await state.set_state(MatrixStates.send_matrix_for_determinant)
 
 
@@ -58,6 +56,7 @@ async def send_matrix_determinant(message: Message, state: FSMContext, config: C
             "Попробуйте еще раз."
         )
         return
+
     text = (
         f"<b>Для матрицы:</b>\n"
         f"{matrix}\n\n"
@@ -70,9 +69,7 @@ async def send_matrix_determinant(message: Message, state: FSMContext, config: C
 
 @router.message(Command(commands=["ref"]))
 async def ref_handler(message: Message, state: FSMContext):
-    # set state for determinant and send mess
     await message.answer("Введите матрицу для представления матрицы в виде ступенчатой")
-
     await state.set_state(MatrixStates.send_matrix_for_ref)
 
 
@@ -90,13 +87,12 @@ async def send_matrix_ref(message: Message, state: FSMContext, config: Config):
         f"<code>{str(result)}</code>"
     )
     await message.answer(text)
+    await state.clear()
 
 
 @router.message(Command(commands=["inv"]))
 async def inv_handler(message: Message, state: FSMContext):
-    # set state for determinant and send mess
     await message.answer("Введите матрицу для вычисления обратной матрицы")
-
     await state.set_state(MatrixStates.send_matrix_for_inv)
 
 
@@ -109,18 +105,56 @@ async def send_matrix_inv(message: Message, state: FSMContext, config: Config):
     try:
         result = matrix.inverse()
     except NonInvertibleMatrix:
-        await message.answer(
-            "Невозможно рассчитать обратную матрицу для данной матрицы!\n"
-            "Попробуйте еще раз."
+        text = "Невозможно рассчитать обратную матрицу для данной матрицы!"
+    else:
+        text = (
+            f"<b>Для матрицы:</b>\n"
+            f"{matrix}\n\n"
+            f"Обратная матрица:\n"
+            f"<code>{str(result)}</code>"
         )
+
+    await message.answer(text)
+    await state.clear()
+
+
+@router.message(Command(commands=["mul"]))
+async def mul_handler(message: Message, state: FSMContext):
+    await message.answer("Введите первую матрицу для вычисления умножения матриц")
+    await state.set_state(MatrixStates.send_first_matrix_for_mul)
+
+
+@router.message(state=MatrixStates.send_first_matrix_for_mul)
+async def send_first_matrix_mul(message: Message, state: FSMContext, config: Config):
+    matrix = await matrix_input(message, config)
+    if matrix is None:
         return
 
-    text = (
-        f"<b>Для матрицы:</b>\n"
-        f"{matrix}\n\n"
-        f"Обратная матрица:\n"
-        f"<code>{str(result)}</code>"
-    )
+    await state.update_data(first_matrix=matrix)
+    await message.answer("Введите вторую матрицу для вычисления умножения матриц")
+    await state.set_state(MatrixStates.send_second_matrix_for_mul)
+
+
+@router.message(state=MatrixStates.send_second_matrix_for_mul)
+async def send_second_matrix_mul(message: Message, state: FSMContext, config: Config):
+    matrix = await matrix_input(message, config)
+    if matrix is None:
+        return
+
+    data = await state.get_data()
+    first_matrix = data["first_matrix"]
+    try:
+        result = first_matrix * matrix
+    except SizesMatchError:
+        text = "Невозможно рассчитать произведение матриц с такими размерами!"
+    else:
+        text = (
+            f"<b>Для матриц:</b>\n"
+            f"{first_matrix}\n\n"
+            f"{matrix}\n\n"
+            f"Произведение матриц:\n"
+            f"<code>{str(result)}</code>"
+        )
+
     await message.answer(text)
-
-
+    await state.clear()

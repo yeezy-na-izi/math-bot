@@ -66,10 +66,12 @@ async def on_startup(
     logging.debug(f"Inline Mode - {states[bot_info.supports_inline_queries]}")
 
     logging.error("Bot started!")
+    await bot.send_message(config.settings.owner_id, "Bot started!")
 
 
 async def on_shutdown(dispatcher: Dispatcher, bot: Bot, config: Config):
     logging.warning("Stopping bot...")
+    await bot.send_message(config.settings.owner_id, "Bot stopped!")
     await remove_bot_commands(bot, config)
     await bot.delete_webhook(drop_pending_updates=config.settings.drop_pending_updates)
     await dispatcher.fsm.storage.close()
