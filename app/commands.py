@@ -3,14 +3,34 @@ from aiogram.types import BotCommand, BotCommandScopeChat, BotCommandScopeDefaul
 
 from app.config import Config
 
-users_commands = {
+users_commands = dict()
+
+bot_commands = {
     "help": "Показать список команд",
+    "about": "Информация о боте",
+}
+
+matrix_commands = {
     "det": "Вычислить детерминант матрицы",
     "inv": "Вычислить обратную матрицу",
     "ref": "Привести матрицу к ступенчатому виду",
+    "mul": "Умножить матрицу на матрицу",
 }
 
-owner_commands = {**users_commands, "ping": "Check bot ping", "stats": "Show bot stats"}
+logic_commands = {
+    "logic": "Посчитать логическое выражение",
+}
+
+users_commands.update(bot_commands)
+users_commands.update(matrix_commands)
+users_commands.update(logic_commands)
+
+admin_commands = {
+    "ping": "Check bot ping",
+    "stats": "Show bot stats"
+}
+
+owner_commands = {**users_commands, **admin_commands}
 
 
 async def setup_bot_commands(bot: Bot, config: Config):
