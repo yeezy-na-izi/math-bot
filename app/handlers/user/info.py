@@ -2,7 +2,7 @@ from aiogram import Bot, Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from app.commands import owner_commands, users_commands, bot_commands, matrix_commands, logic_commands, admin_commands
+from app.commands import bot_commands, matrix_commands, logic_commands, admin_commands, for_teacher_command
 from app.config import Config
 from app.keyboards.inline import get_author_keyboard
 
@@ -24,6 +24,12 @@ async def help_handler(message: Message, config: Config):
     for command in logic_commands:
         text += f"/{command} - {logic_commands[command]} \n"
     text += "\n"
+    # add commands for teacher
+    text += "<b> Команды для учителя:</b> \n"
+    for command in for_teacher_command:
+        text += f"/{command} - {for_teacher_command[command]} \n"
+    text += "\n"
+
     if message.from_user.id == config.settings.owner_id:
         text += "<b>👑 Команды для владельца:</b> \n"
         for command in admin_commands:

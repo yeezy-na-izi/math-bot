@@ -21,6 +21,10 @@ logic_commands = {
     "logic": "Посчитать логическое выражение",
 }
 
+for_teacher_command = {
+    "get_random_student": "Получить случайного студента",
+}
+
 users_commands.update(bot_commands)
 users_commands.update(matrix_commands)
 users_commands.update(logic_commands)
