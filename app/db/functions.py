@@ -4,6 +4,9 @@ from app.db import models
 
 
 class User(models.User):
+    def __str__(self):
+        return f"{self.id}) {self.telegram_id}"
+
     @classmethod
     async def is_registered(cls, telegram_id: int) -> [models.User, bool]:
         try:
