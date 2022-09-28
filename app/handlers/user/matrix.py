@@ -1,3 +1,5 @@
+from typing import Union
+
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -10,7 +12,7 @@ from app.utils.matrix import Matrix, SizesMatchError, SquareMatrixRequired, NonI
 router = Router()
 
 
-async def matrix_input(message: Message, config: Config):
+async def matrix_input(message: Message, config: Config) -> Union[Matrix, None]:
     try:
         lst = [[float(x) for x in row.split()] for row in message.text.split('\n')]
         matrix = Matrix.from_list(lst)
@@ -153,6 +155,56 @@ async def send_second_matrix_mul(message: Message, state: FSMContext, config: Co
             f"{first_matrix}\n\n"
             f"{matrix}\n\n"
             f"Произведение матриц:\n"
+            f"<code>{str(result)}</code>"
+        )
+
+    await message.answer(text)
+    await state.clear()
+
+
+@router.message(Command(commands=["slau"]))
+async def slau_handler(message: Message, state: FSMContext):
+    await message.answer("Введите матрицу для решения СЛАУ")
+    await state.set_state(MatrixStates.send_matrix_for_slau)
+
+
+@router.message(state=MatrixStates.send_matrix_for_slau)
+async def send_matrix_slau(message: Message, state: FSMContext, config: Config):
+    matrix = await matrix_input(message, config)
+    if matrix is None:
+        return
+    try:
+        matrix = matrix.inverse()
+    except NonInvertibleMatrix:
+        text = "Невозможно рассчитать обратную матрицу для данной матрицы!"
+    else:
+        text = "Введите вектор для решения СЛАУ"
+
+    await state.update_data(matrix=matrix)
+    await message.answer(text=text)
+    await state.set_state(MatrixStates.send_vector_for_slau)
+
+
+@router.message(state=MatrixStates.send_vector_for_slau)
+async def send_vector_slau(message: Message, state: FSMContext, config: Config):
+    vector = await matrix_input(message, config)
+    if vector is None:
+        return
+
+    data = await state.get_data()
+    matrix = data["matrix"]
+    try:
+        result = matrix * vector
+    except SizesMatchError:
+        text = "Невозможно рассчитать решение СЛАУ с такими размерами!"
+
+    else:
+        text = (
+            f"<b>Для матрицы:</b>\n"
+            f"{matrix}\n\n"
+            f"и вектора:\n"
+            f"{vector}\n\n"
+            f"Решение СЛАУ:\n"
             f"<code>{str(result)}</code>"
         )
 
