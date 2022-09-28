@@ -25,7 +25,7 @@ async def help_handler(message: Message, config: Config):
         text += f"/{command} - {logic_commands[command]} \n"
     text += "\n"
     # add commands for teacher
-    text += "<b> Команды для учителя:</b> \n"
+    text += "<b>👨‍🏫 Команды для препода:</b> \n"
     for command in for_teacher_command:
         text += f"/{command} - {for_teacher_command[command]} \n"
     text += "\n"
